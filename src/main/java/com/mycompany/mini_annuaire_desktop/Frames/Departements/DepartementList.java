@@ -4,17 +4,54 @@
  */
 package com.mycompany.mini_annuaire_desktop.Frames.Departements;
 
+import com.mycompany.mini_annuaire_desktop.DAO.DepartementsDAO;
+import com.mycompany.mini_annuaire_desktop.DB.JDBC;
+import com.mycompany.mini_annuaire_desktop.Entity.Departement;
+import java.sql.Array;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author KAOUTAR
  */
 public class DepartementList extends javax.swing.JFrame {
+    
+    private  DepartementsDAO departementsDAO = new DepartementsDAO();
 
     /**
      * Creates new form DepartementList
      */
     public DepartementList() {
         initComponents();
+        fillTable();
+
+    }
+    
+    public void fillTable(){
+        try {
+              ArrayList<Departement> departements = departementsDAO.getAll();  
+              DefaultTableModel model = (DefaultTableModel) DataTable.getModel();
+              String[] rowData = new String[departements.size()];
+              
+              for (int i=0 ; i<departements.size();i++){
+                  rowData[0] = departements.get(i).getLabel();
+                  model.addRow(rowData);
+
+              }
+              
+             } catch (SQLException ex) {
+               System.out.println(ex.getStackTrace());
+            }
+    }
+    
+    public void initJTable(){
+        DefaultTableModel model = (DefaultTableModel) DataTable.getModel();
+        model.setRowCount(0);
     }
 
     /**
@@ -44,7 +81,7 @@ public class DepartementList extends javax.swing.JFrame {
         jLabel10 = new javax.swing.JLabel();
         jPanel5 = new javax.swing.JPanel();
         jPanel6 = new javax.swing.JPanel();
-        jTextField1 = new javax.swing.JTextField();
+        FilterInput = new javax.swing.JTextField();
         jPanel9 = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
@@ -52,7 +89,7 @@ public class DepartementList extends javax.swing.JFrame {
         jPanel11 = new javax.swing.JPanel();
         jPanel12 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        DataTable = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -99,11 +136,14 @@ public class DepartementList extends javax.swing.JFrame {
         jPanel3.setBackground(new java.awt.Color(95, 206, 128));
         jPanel3.setLayout(new java.awt.BorderLayout());
 
+        jPanel7.setBackground(new java.awt.Color(255, 255, 255));
+
         jLabel3.setBackground(new java.awt.Color(0, 0, 0));
         jLabel3.setFont(new java.awt.Font("Segoe UI Semibold", 1, 24)); // NOI18N
         jLabel3.setText("Utilisation");
 
         jLabel4.setFont(new java.awt.Font("Segoe UI Semibold", 1, 18)); // NOI18N
+        jLabel4.setForeground(new java.awt.Color(95, 206, 128));
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel4.setText("départements");
 
@@ -147,7 +187,8 @@ public class DepartementList extends javax.swing.JFrame {
 
         jPanel3.add(jPanel7, java.awt.BorderLayout.PAGE_START);
 
-        jPanel8.setBackground(new java.awt.Color(204, 255, 204));
+        jPanel8.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel8.setPreferredSize(new java.awt.Dimension(200, 169));
 
         jLabel7.setBackground(new java.awt.Color(0, 0, 0));
         jLabel7.setFont(new java.awt.Font("Segoe UI Semibold", 1, 24)); // NOI18N
@@ -183,16 +224,16 @@ public class DepartementList extends javax.swing.JFrame {
         );
         jPanel8Layout.setVerticalGroup(
             jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel8Layout.createSequentialGroup()
-                .addGap(14, 14, 14)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel8Layout.createSequentialGroup()
+                .addContainerGap(17, Short.MAX_VALUE)
                 .addComponent(jLabel7)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel8)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel9)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel10)
-                .addContainerGap(18, Short.MAX_VALUE))
+                .addGap(27, 27, 27))
         );
 
         jPanel3.add(jPanel8, java.awt.BorderLayout.PAGE_END);
@@ -208,11 +249,35 @@ public class DepartementList extends javax.swing.JFrame {
 
         jPanel6.setBackground(new java.awt.Color(255, 255, 255));
 
-        jTextField1.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        jTextField1.setText("Filtrer");
-        jTextField1.addActionListener(new java.awt.event.ActionListener() {
+        FilterInput.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        FilterInput.setText("Filtrer");
+        FilterInput.setToolTipText("");
+        FilterInput.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                FilterInputFocusGained(evt);
+            }
+        });
+        FilterInput.addInputMethodListener(new java.awt.event.InputMethodListener() {
+            public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
+            }
+            public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
+                FilterInputInputMethodTextChanged(evt);
+            }
+        });
+        FilterInput.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField1ActionPerformed(evt);
+                FilterInputActionPerformed(evt);
+            }
+        });
+        FilterInput.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                FilterInputKeyPressed(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                FilterInputKeyReleased(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                FilterInputKeyTyped(evt);
             }
         });
 
@@ -222,14 +287,14 @@ public class DepartementList extends javax.swing.JFrame {
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
                 .addContainerGap(340, Short.MAX_VALUE)
-                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 211, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(FilterInput, javax.swing.GroupLayout.PREFERRED_SIZE, 211, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(49, 49, 49))
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addGap(29, 29, 29)
-                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(FilterInput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(49, Short.MAX_VALUE))
         );
 
@@ -238,13 +303,13 @@ public class DepartementList extends javax.swing.JFrame {
         jPanel9.setBackground(new java.awt.Color(255, 255, 255));
 
         jButton1.setText("Delete");
-
-        jButton2.setText("Delete");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+        jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton1MouseClicked(evt);
             }
         });
+
+        jButton2.setText("Inserer");
 
         javax.swing.GroupLayout jPanel9Layout = new javax.swing.GroupLayout(jPanel9);
         jPanel9.setLayout(jPanel9Layout);
@@ -301,18 +366,25 @@ public class DepartementList extends javax.swing.JFrame {
 
         jPanel10.add(jPanel12, java.awt.BorderLayout.LINE_END);
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        DataTable.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
+        DataTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "Label"
             }
-        ));
-        jScrollPane1.setViewportView(jTable1);
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+        });
+        DataTable.setRowHeight(50);
+        jScrollPane1.setViewportView(DataTable);
 
         jPanel10.add(jScrollPane1, java.awt.BorderLayout.CENTER);
 
@@ -323,13 +395,73 @@ public class DepartementList extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+    private void FilterInputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_FilterInputActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField1ActionPerformed
+    }//GEN-LAST:event_FilterInputActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void FilterInputFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_FilterInputFocusGained
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton2ActionPerformed
+       
+    }//GEN-LAST:event_FilterInputFocusGained
+
+    private void FilterInputKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_FilterInputKeyPressed
+        /* if(FilterInput.getText().equals("Filtrer")){
+            FilterInput.setText("");
+        }*/
+        
+    }//GEN-LAST:event_FilterInputKeyPressed
+
+    private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
+        // TODO add your handling code here:
+        
+        int row = DataTable.getSelectedRow();
+        if(row == -1){
+            JOptionPane.showMessageDialog(null,"Il faut selectionner une ligne pour la supprimer ! ","Oops",JOptionPane.CANCEL_OPTION);
+        }
+        else{
+           int opt = JOptionPane.showConfirmDialog(null,"Vous voulez vraiment supprimer cette departement ! ","Confirmation",JOptionPane.YES_NO_OPTION);
+           if(opt == 0){
+               try {
+                   DefaultTableModel model = (DefaultTableModel) DataTable.getModel();
+                   departementsDAO.destroy(new Departement(model.getValueAt(row, 0).toString()));
+                   initJTable();
+                   fillTable();
+               } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null,"Un erreur s'est produit !","Oops",JOptionPane.YES_NO_OPTION);
+               }
+           }
+        }
+        System.out.println(row);
+    }//GEN-LAST:event_jButton1MouseClicked
+
+    private void FilterInputInputMethodTextChanged(java.awt.event.InputMethodEvent evt) {//GEN-FIRST:event_FilterInputInputMethodTextChanged
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_FilterInputInputMethodTextChanged
+
+    private void FilterInputKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_FilterInputKeyTyped
+        // TODO add your handling code here:
+            
+    }//GEN-LAST:event_FilterInputKeyTyped
+
+    private void FilterInputKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_FilterInputKeyReleased
+        // TODO add your handling code here:
+            try {
+                 initJTable();
+              ArrayList<Departement> departements = departementsDAO.getDepartementByLabel(FilterInput.getText());  
+              DefaultTableModel model = (DefaultTableModel) DataTable.getModel();
+              String[] rowData = new String[departements.size()];
+              
+              for (int i=0 ; i<departements.size();i++){
+                  rowData[0] = departements.get(i).getLabel();
+                  model.addRow(rowData);
+
+              }
+              
+             } catch (SQLException ex) {
+               System.out.println(ex.getStackTrace());
+            }
+    }//GEN-LAST:event_FilterInputKeyReleased
 
     /**
      * @param args the command line arguments
@@ -361,12 +493,15 @@ public class DepartementList extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
+                
                 new DepartementList().setVisible(true);
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTable DataTable;
+    private javax.swing.JTextField FilterInput;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel10;
@@ -392,7 +527,5 @@ public class DepartementList extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField1;
     // End of variables declaration//GEN-END:variables
 }

@@ -1,9 +1,12 @@
-Frames\Accueil$1.class
+com\mycompany\mini_annuaire_desktop\Frames\Accueil.class
 com\mycompany\mini_annuaire_desktop\Entity\Departement.class
 com\mycompany\mini_annuaire_desktop\Entity\Etudiant.class
+com\mycompany\mini_annuaire_desktop\Frames\Departements\DepartementList$2.class
 com\mycompany\mini_annuaire_desktop\DAO\DepartementsDAO.class
+com\mycompany\mini_annuaire_desktop\Frames\Departements\DepartementList.class
+com\mycompany\mini_annuaire_desktop\Entity\Filiere.class
+com\mycompany\mini_annuaire_desktop\Frames\Accueil$1.class
 com\mycompany\mini_annuaire_desktop\DB\JDBC.class
+com\mycompany\mini_annuaire_desktop\Frames\Departements\DepartementList$1.class
 com\mycompany\mini_annuaire_desktop\DAO\EtudiantDAO.class
 com\mycompany\mini_annuaire_desktop\DAO\FiliereDAO.class
-Frames\Accueil.class
-com\mycompany\mini_annuaire_desktop\Entity\Filiere.class
