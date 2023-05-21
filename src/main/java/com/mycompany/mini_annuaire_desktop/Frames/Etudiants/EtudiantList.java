@@ -4,20 +4,15 @@
  */
 package com.mycompany.mini_annuaire_desktop.Frames.Etudiants;
 
-import com.mycompany.mini_annuaire_desktop.Frames.Filieres.*;
-import com.mycompany.mini_annuaire_desktop.Frames.Departements.*;
+
 import com.mycompany.mini_annuaire_desktop.DAO.DepartementsDAO;
 import com.mycompany.mini_annuaire_desktop.DAO.EtudiantDAO;
 import com.mycompany.mini_annuaire_desktop.DAO.FiliereDAO;
-import com.mycompany.mini_annuaire_desktop.DB.JDBC;
 import com.mycompany.mini_annuaire_desktop.Entity.Departement;
 import com.mycompany.mini_annuaire_desktop.Entity.Etudiant;
 import com.mycompany.mini_annuaire_desktop.Entity.Filiere;
-import java.sql.Array;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -89,13 +84,11 @@ public class EtudiantList extends javax.swing.JFrame {
     }
     
     public void fillTableByHintResult(String hint,String filiere,String departement){
-        System.out.println(filiere+" "+departement+" "+hint);
         try {
               ArrayList<Etudiant> etudiants = etudiantDAO.getEtudiantsByHint(hint, filiere, departement);  
               DefaultTableModel model = (DefaultTableModel) DataTable.getModel();
               String[] rowData = new String[6];
               if(!etudiants.isEmpty()){
-              System.out.println(etudiants.size()+'\n');
               for (int i=0 ; i<etudiants.size();i++){
                   rowData[0] = etudiants.get(i).getCNE().toString();
                   rowData[1] = etudiants.get(i).getNom();
@@ -104,7 +97,6 @@ public class EtudiantList extends javax.swing.JFrame {
                   rowData[4] = etudiants.get(i).getFiliere().getLabel();
                   rowData[5] = etudiants.get(i).getDepartement().getLabel();
                   model.addRow(rowData);
-                  System.out.println(etudiants.get(i).getNom()+'\n');
 
               }}
               

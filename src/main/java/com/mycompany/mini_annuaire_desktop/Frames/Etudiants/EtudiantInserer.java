@@ -4,8 +4,7 @@
  */
 package com.mycompany.mini_annuaire_desktop.Frames.Etudiants;
 
-import com.mycompany.mini_annuaire_desktop.Frames.Filieres.*;
-import com.mycompany.mini_annuaire_desktop.Frames.Departements.*;
+
 import com.mycompany.mini_annuaire_desktop.DAO.DepartementsDAO;
 import com.mycompany.mini_annuaire_desktop.DAO.EtudiantDAO;
 import com.mycompany.mini_annuaire_desktop.DAO.FiliereDAO;
@@ -17,7 +16,6 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.JOptionPane;
 
 /**
  *

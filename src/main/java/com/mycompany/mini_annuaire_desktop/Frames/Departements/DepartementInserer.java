@@ -7,8 +7,6 @@ package com.mycompany.mini_annuaire_desktop.Frames.Departements;
 import com.mycompany.mini_annuaire_desktop.DAO.DepartementsDAO;
 import com.mycompany.mini_annuaire_desktop.Entity.Departement;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 /**

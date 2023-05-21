@@ -4,17 +4,11 @@
  */
 package com.mycompany.mini_annuaire_desktop.Frames.Filieres;
 
-import com.mycompany.mini_annuaire_desktop.Frames.Departements.*;
-import com.mycompany.mini_annuaire_desktop.DAO.DepartementsDAO;
 import com.mycompany.mini_annuaire_desktop.DAO.FiliereDAO;
-import com.mycompany.mini_annuaire_desktop.DB.JDBC;
 import com.mycompany.mini_annuaire_desktop.Entity.Departement;
 import com.mycompany.mini_annuaire_desktop.Entity.Filiere;
-import java.sql.Array;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -435,7 +429,6 @@ public class FiliereList extends javax.swing.JFrame {
                }
            }
         }
-        System.out.println(row);
     }//GEN-LAST:event_jButton1MouseClicked
 
     private void FilterInputInputMethodTextChanged(java.awt.event.InputMethodEvent evt) {//GEN-FIRST:event_FilterInputInputMethodTextChanged
