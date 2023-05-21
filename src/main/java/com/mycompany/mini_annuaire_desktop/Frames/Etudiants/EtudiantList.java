@@ -2,16 +2,23 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-package com.mycompany.mini_annuaire_desktop.Frames.Departements;
+package com.mycompany.mini_annuaire_desktop.Frames.Etudiants;
 
+import com.mycompany.mini_annuaire_desktop.Frames.Filieres.*;
+import com.mycompany.mini_annuaire_desktop.Frames.Departements.*;
 import com.mycompany.mini_annuaire_desktop.DAO.DepartementsDAO;
+import com.mycompany.mini_annuaire_desktop.DAO.EtudiantDAO;
+import com.mycompany.mini_annuaire_desktop.DAO.FiliereDAO;
 import com.mycompany.mini_annuaire_desktop.DB.JDBC;
 import com.mycompany.mini_annuaire_desktop.Entity.Departement;
+import com.mycompany.mini_annuaire_desktop.Entity.Etudiant;
+import com.mycompany.mini_annuaire_desktop.Entity.Filiere;
 import java.sql.Array;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -19,39 +26,122 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author KAOUTAR
  */
-public class DepartementList extends javax.swing.JFrame {
+public class EtudiantList extends javax.swing.JFrame {
     
+    private  EtudiantDAO etudiantDAO = new EtudiantDAO();
+    private  FiliereDAO filiereDAO = new FiliereDAO();
     private  DepartementsDAO departementsDAO = new DepartementsDAO();
 
     /**
      * Creates new form DepartementList
      */
-    public DepartementList() {
+    public EtudiantList() {
         initComponents();
-        fillTable();
+        fillDepartementsComboBox();
+            String dep = "";
+            String fil = "";
+            try{
+                fil = filComboBox.getSelectedItem().toString();
+            }
+            catch(Exception ex){
+                System.out.println(ex.getMessage());
+            }
+            
+            try{
+                dep = depComboBox.getSelectedItem().toString();
+            }
+            catch(Exception ex){
+                System.out.println(ex.getMessage());
+            }
+            initJTable();
+            fillTableByHintResult(FilterInput.getText(),fil,dep);        
 
     }
     
     public void fillTable(){
         try {
-              ArrayList<Departement> departements = departementsDAO.getAll();  
+              initJTable();
+              ArrayList<Etudiant> etudiants = etudiantDAO.getAll();  
               DefaultTableModel model = (DefaultTableModel) DataTable.getModel();
-              String[] rowData = new String[1];
-              
-              for (int i=0 ; i<departements.size();i++){
-                  rowData[0] = departements.get(i).getLabel();
+              String[] rowData = new String[6];
+              if(!etudiants.isEmpty()){
+              for (int i=0 ; i<etudiants.size();i++){
+                  rowData[0] = etudiants.get(i).getCNE().toString();
+                  rowData[1] = etudiants.get(i).getNom();
+                  rowData[2] = etudiants.get(i).getPrenom();
+                  rowData[3] = etudiants.get(i).getTelephone();
+                  rowData[4] = etudiants.get(i).getFiliere().getLabel();
+                  rowData[5] = etudiants.get(i).getDepartement().getLabel();
                   model.addRow(rowData);
 
+              }
               }
               
              } catch (SQLException ex) {
                System.out.println(ex.getStackTrace());
             }
+             
     }
     
     public void initJTable(){
         DefaultTableModel model = (DefaultTableModel) DataTable.getModel();
         model.setRowCount(0);
+    }
+    
+    public void fillTableByHintResult(String hint,String filiere,String departement){
+        System.out.println(filiere+" "+departement+" "+hint);
+        try {
+              ArrayList<Etudiant> etudiants = etudiantDAO.getEtudiantsByHint(hint, filiere, departement);  
+              DefaultTableModel model = (DefaultTableModel) DataTable.getModel();
+              String[] rowData = new String[6];
+              if(!etudiants.isEmpty()){
+              System.out.println(etudiants.size()+'\n');
+              for (int i=0 ; i<etudiants.size();i++){
+                  rowData[0] = etudiants.get(i).getCNE().toString();
+                  rowData[1] = etudiants.get(i).getNom();
+                  rowData[2] = etudiants.get(i).getPrenom();
+                  rowData[3] = etudiants.get(i).getTelephone();
+                  rowData[4] = etudiants.get(i).getFiliere().getLabel();
+                  rowData[5] = etudiants.get(i).getDepartement().getLabel();
+                  model.addRow(rowData);
+                  System.out.println(etudiants.get(i).getNom()+'\n');
+
+              }}
+              
+                            
+             } catch (SQLException ex) {
+               System.out.println(ex.getStackTrace());
+            }
+    }
+    
+    
+    
+    public void fillDepartementsComboBox(){
+        try {
+            // TODO add your handling code here:
+            ArrayList<Departement> departements = departementsDAO.getAll();
+            DefaultComboBoxModel model = (DefaultComboBoxModel) depComboBox.getModel();
+            for (int i=0 ; i<departements.size();i++){
+                model.addElement(departements.get(i).getLabel());
+            }
+
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+    
+     public void fillFilieresComboBox(String departement){
+        try {
+            // TODO add your handling code here:
+            ArrayList<Filiere> filieres = filiereDAO.getFiliereByDepartement(departement);
+            DefaultComboBoxModel model = (DefaultComboBoxModel) filComboBox.getModel();
+            for (int i=0 ; i<filieres.size();i++){
+                model.addElement(filieres.get(i).getLabel());
+            }
+
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
     }
 
     /**
@@ -82,6 +172,8 @@ public class DepartementList extends javax.swing.JFrame {
         jPanel5 = new javax.swing.JPanel();
         jPanel6 = new javax.swing.JPanel();
         FilterInput = new javax.swing.JTextField();
+        filComboBox = new javax.swing.JComboBox<>();
+        depComboBox = new javax.swing.JComboBox<>();
         jPanel9 = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
@@ -143,11 +235,11 @@ public class DepartementList extends javax.swing.JFrame {
         jLabel3.setText("Utilisation");
 
         jLabel4.setFont(new java.awt.Font("Segoe UI Semibold", 1, 18)); // NOI18N
-        jLabel4.setForeground(new java.awt.Color(95, 206, 128));
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel4.setText("départements");
 
         jLabel5.setFont(new java.awt.Font("Segoe UI Semibold", 1, 18)); // NOI18N
+        jLabel5.setForeground(new java.awt.Color(95, 206, 128));
         jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel5.setText("Filiéres");
 
@@ -250,7 +342,6 @@ public class DepartementList extends javax.swing.JFrame {
         jPanel6.setBackground(new java.awt.Color(255, 255, 255));
 
         FilterInput.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        FilterInput.setText("Filtrer");
         FilterInput.setToolTipText("");
         FilterInput.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
@@ -281,20 +372,39 @@ public class DepartementList extends javax.swing.JFrame {
             }
         });
 
+        filComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                filComboBoxActionPerformed(evt);
+            }
+        });
+
+        depComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                depComboBoxActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
         jPanel6Layout.setHorizontalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
-                .addContainerGap(340, Short.MAX_VALUE)
-                .addComponent(FilterInput, javax.swing.GroupLayout.PREFERRED_SIZE, 211, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(48, Short.MAX_VALUE)
+                .addComponent(depComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(filComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(FilterInput, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(49, 49, 49))
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addGap(29, 29, 29)
-                .addComponent(FilterInput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(FilterInput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(filComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(depComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(49, Short.MAX_VALUE))
         );
 
@@ -366,24 +476,24 @@ public class DepartementList extends javax.swing.JFrame {
 
         jPanel10.add(jPanel12, java.awt.BorderLayout.LINE_END);
 
-        DataTable.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
+        DataTable.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         DataTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "Label"
+                "CNE", "Nom", "Prenom", "Telephone", "Filiere", "Departement"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
             };
 
             public Class getColumnClass(int columnIndex) {
                 return types [columnIndex];
             }
         });
-        DataTable.setRowHeight(50);
+        DataTable.setRowHeight(35);
         jScrollPane1.setViewportView(DataTable);
 
         jPanel10.add(jScrollPane1, java.awt.BorderLayout.CENTER);
@@ -419,19 +529,34 @@ public class DepartementList extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null,"Il faut selectionner une ligne pour la supprimer ! ","Oops",JOptionPane.CANCEL_OPTION);
         }
         else{
-           int opt = JOptionPane.showConfirmDialog(null,"Vous voulez vraiment supprimer cette departement ! ","Confirmation",JOptionPane.YES_NO_OPTION);
+           int opt = JOptionPane.showConfirmDialog(null,"Vous voulez vraiment supprimer cette filiere ! ","Confirmation",JOptionPane.YES_NO_OPTION);
            if(opt == 0){
                try {
                    DefaultTableModel model = (DefaultTableModel) DataTable.getModel();
-                   departementsDAO.destroy(new Departement(model.getValueAt(row, 0).toString()));
+                   etudiantDAO.destroy(new Etudiant(Integer.parseInt(model.getValueAt(row, 0).toString()),model.getValueAt(row, 1).toString(),
+                         model.getValueAt(row, 2).toString(),new Filiere(model.getValueAt(row, 4).toString(),new Departement(model.getValueAt(row, 5).toString())),
+                           new Departement(model.getValueAt(row, 5).toString()),model.getValueAt(row, 3).toString()));
                    initJTable();
-                   fillTable();
-               } catch (SQLException ex) {
+            String dep = "";
+            String fil = "";
+            try{
+                fil = filComboBox.getSelectedItem().toString();
+            }
+            catch(Exception ex){
+                System.out.println(ex.getMessage());
+            }
+            
+            try{
+                dep = depComboBox.getSelectedItem().toString();
+            }
+            catch(Exception ex){
+                System.out.println(ex.getMessage());
+            }
+            fillTableByHintResult(FilterInput.getText(),fil,dep);                       } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null,"Un erreur s'est produit !","Oops",JOptionPane.YES_NO_OPTION);
                }
            }
         }
-        System.out.println(row);
     }//GEN-LAST:event_jButton1MouseClicked
 
     private void FilterInputInputMethodTextChanged(java.awt.event.InputMethodEvent evt) {//GEN-FIRST:event_FilterInputInputMethodTextChanged
@@ -446,23 +571,68 @@ public class DepartementList extends javax.swing.JFrame {
 
     private void FilterInputKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_FilterInputKeyReleased
         // TODO add your handling code here:
-            try {
-                 initJTable();
-              ArrayList<Departement> departements = departementsDAO.getDepartementByLabel(FilterInput.getText());  
-              DefaultTableModel model = (DefaultTableModel) DataTable.getModel();
-              String[] rowData = new String[1];
-              if(!departements.isEmpty()){
-              for (int i=0 ; i<departements.size();i++){
-                  rowData[0] = departements.get(i).getLabel();
-                  model.addRow(rowData);
-
-              }
-              }
-              
-             } catch (SQLException ex) {
-               System.out.println(ex.getStackTrace());
+            String dep = "";
+            String fil = "";
+            try{
+                fil = filComboBox.getSelectedItem().toString();
             }
+            catch(Exception ex){
+                System.out.println(ex.getMessage());
+            }
+            
+            try{
+                dep = depComboBox.getSelectedItem().toString();
+            }
+            catch(Exception ex){
+                System.out.println(ex.getMessage());
+            }
+            initJTable();
+            fillTableByHintResult(FilterInput.getText(),fil,dep);
     }//GEN-LAST:event_FilterInputKeyReleased
+
+    private void filComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_filComboBoxActionPerformed
+        // TODO add your handling code here:
+        String dep = "";
+            String fil = "";
+            try{
+                fil = filComboBox.getSelectedItem().toString();
+            }
+            catch(Exception ex){
+                System.out.println(ex.getMessage());
+            }
+            
+            try{
+                dep = depComboBox.getSelectedItem().toString();
+            }
+            catch(Exception ex){
+                System.out.println(ex.getMessage());
+            }
+            initJTable();           
+            fillTableByHintResult(FilterInput.getText(),fil,dep);
+    }//GEN-LAST:event_filComboBoxActionPerformed
+
+    private void depComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_depComboBoxActionPerformed
+        // TODO add your handling code here:
+        filComboBox.removeAllItems();
+        fillFilieresComboBox(depComboBox.getSelectedItem().toString());
+        String dep = "";
+            String fil = "";
+            try{
+                fil = filComboBox.getSelectedItem().toString();
+            }
+            catch(Exception ex){
+                System.out.println(ex.getMessage());
+            }
+            
+            try{
+                dep = depComboBox.getSelectedItem().toString();
+            }
+            catch(Exception ex){
+                System.out.println(ex.getMessage());
+            }
+            initJTable();           
+            fillTableByHintResult(FilterInput.getText(),fil,dep);
+    }//GEN-LAST:event_depComboBoxActionPerformed
 
     /**
      * @param args the command line arguments
@@ -481,21 +651,36 @@ public class DepartementList extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(DepartementList.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(EtudiantList.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(DepartementList.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(EtudiantList.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(DepartementList.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(EtudiantList.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(DepartementList.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(EtudiantList.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 
-                new DepartementList().setVisible(true);
+                new EtudiantList().setVisible(true);
             }
         });
     }
@@ -503,6 +688,8 @@ public class DepartementList extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTable DataTable;
     private javax.swing.JTextField FilterInput;
+    private javax.swing.JComboBox<String> depComboBox;
+    private javax.swing.JComboBox<String> filComboBox;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel10;

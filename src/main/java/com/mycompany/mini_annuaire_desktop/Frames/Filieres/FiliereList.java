@@ -2,11 +2,14 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-package com.mycompany.mini_annuaire_desktop.Frames.Departements;
+package com.mycompany.mini_annuaire_desktop.Frames.Filieres;
 
+import com.mycompany.mini_annuaire_desktop.Frames.Departements.*;
 import com.mycompany.mini_annuaire_desktop.DAO.DepartementsDAO;
+import com.mycompany.mini_annuaire_desktop.DAO.FiliereDAO;
 import com.mycompany.mini_annuaire_desktop.DB.JDBC;
 import com.mycompany.mini_annuaire_desktop.Entity.Departement;
+import com.mycompany.mini_annuaire_desktop.Entity.Filiere;
 import java.sql.Array;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -19,14 +22,14 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author KAOUTAR
  */
-public class DepartementList extends javax.swing.JFrame {
+public class FiliereList extends javax.swing.JFrame {
     
-    private  DepartementsDAO departementsDAO = new DepartementsDAO();
+    private  FiliereDAO filiereDAO = new FiliereDAO();
 
     /**
      * Creates new form DepartementList
      */
-    public DepartementList() {
+    public FiliereList() {
         initComponents();
         fillTable();
 
@@ -34,12 +37,13 @@ public class DepartementList extends javax.swing.JFrame {
     
     public void fillTable(){
         try {
-              ArrayList<Departement> departements = departementsDAO.getAll();  
+              ArrayList<Filiere> filieres = filiereDAO.getAll();  
               DefaultTableModel model = (DefaultTableModel) DataTable.getModel();
-              String[] rowData = new String[1];
+              String[] rowData = new String[2];
               
-              for (int i=0 ; i<departements.size();i++){
-                  rowData[0] = departements.get(i).getLabel();
+              for (int i=0 ; i<filieres.size();i++){
+                  rowData[0] = filieres.get(i).getLabel();
+                  rowData[1] = filieres.get(i).getDepartement().getLabel();
                   model.addRow(rowData);
 
               }
@@ -143,11 +147,11 @@ public class DepartementList extends javax.swing.JFrame {
         jLabel3.setText("Utilisation");
 
         jLabel4.setFont(new java.awt.Font("Segoe UI Semibold", 1, 18)); // NOI18N
-        jLabel4.setForeground(new java.awt.Color(95, 206, 128));
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel4.setText("départements");
 
         jLabel5.setFont(new java.awt.Font("Segoe UI Semibold", 1, 18)); // NOI18N
+        jLabel5.setForeground(new java.awt.Color(95, 206, 128));
         jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel5.setText("Filiéres");
 
@@ -366,24 +370,24 @@ public class DepartementList extends javax.swing.JFrame {
 
         jPanel10.add(jPanel12, java.awt.BorderLayout.LINE_END);
 
-        DataTable.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
+        DataTable.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         DataTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "Label"
+                "Label", "Departement"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class
+                java.lang.String.class, java.lang.String.class
             };
 
             public Class getColumnClass(int columnIndex) {
                 return types [columnIndex];
             }
         });
-        DataTable.setRowHeight(50);
+        DataTable.setRowHeight(35);
         jScrollPane1.setViewportView(DataTable);
 
         jPanel10.add(jScrollPane1, java.awt.BorderLayout.CENTER);
@@ -419,11 +423,11 @@ public class DepartementList extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null,"Il faut selectionner une ligne pour la supprimer ! ","Oops",JOptionPane.CANCEL_OPTION);
         }
         else{
-           int opt = JOptionPane.showConfirmDialog(null,"Vous voulez vraiment supprimer cette departement ! ","Confirmation",JOptionPane.YES_NO_OPTION);
+           int opt = JOptionPane.showConfirmDialog(null,"Vous voulez vraiment supprimer cette filiere ! ","Confirmation",JOptionPane.YES_NO_OPTION);
            if(opt == 0){
                try {
                    DefaultTableModel model = (DefaultTableModel) DataTable.getModel();
-                   departementsDAO.destroy(new Departement(model.getValueAt(row, 0).toString()));
+                   filiereDAO.destroy(new Filiere(model.getValueAt(row, 0).toString(),new Departement(model.getValueAt(row, 1).toString())));
                    initJTable();
                    fillTable();
                } catch (SQLException ex) {
@@ -448,14 +452,14 @@ public class DepartementList extends javax.swing.JFrame {
         // TODO add your handling code here:
             try {
                  initJTable();
-              ArrayList<Departement> departements = departementsDAO.getDepartementByLabel(FilterInput.getText());  
+              ArrayList<Filiere> filieres = filiereDAO.getFiliereByLabel(FilterInput.getText());  
               DefaultTableModel model = (DefaultTableModel) DataTable.getModel();
-              String[] rowData = new String[1];
-              if(!departements.isEmpty()){
-              for (int i=0 ; i<departements.size();i++){
-                  rowData[0] = departements.get(i).getLabel();
+              String[] rowData = new String[2];
+              if(!filieres.isEmpty()){
+              for (int i=0 ; i<filieres.size();i++){
+                  rowData[0] = filieres.get(i).getLabel();
+                  rowData[1] = filieres.get(i).getDepartement().getLabel();
                   model.addRow(rowData);
-
               }
               }
               
@@ -481,21 +485,24 @@ public class DepartementList extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(DepartementList.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(FiliereList.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(DepartementList.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(FiliereList.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(DepartementList.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(FiliereList.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(DepartementList.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(FiliereList.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 
-                new DepartementList().setVisible(true);
+                new FiliereList().setVisible(true);
             }
         });
     }
